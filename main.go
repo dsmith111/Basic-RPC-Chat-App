@@ -24,6 +24,7 @@ var (
 	localAddress  = "0.0.0.0:5083"
 	ActiveUsers   map[string]bool
 	nodeType      string
+	userName      string
 )
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
 	// Prep client or server listen handlers
 	fmt.Printf("NodeType: %s\n", nodeType)
 	if nodeType == clientName {
-		err = client.StartClient(localAddress, serverAddress)
+		err = client.StartClient(localAddress, serverAddress, userName)
 	} else if nodeType == serverName {
 		err = server.StartServer(serverAddress)
 		localAddress = serverAddress
@@ -72,6 +73,7 @@ func main() {
 
 func initFlags() {
 	flag.StringVar(&nodeType, "type", "client", "Set the node to either be a client or server")
+	flag.StringVar(&userName, "name", "anonymous", "Set your username")
 }
 
 // Get preferred outbound ip of this machine

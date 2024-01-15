@@ -20,6 +20,7 @@ var (
 	hasConnected    = false
 	address         string
 	messagesSent    = 0
+	clientName      string
 )
 
 type ClientMessageController struct {
@@ -43,8 +44,9 @@ func (controller *ClientMessageController) Send(messageData shared.Message, ack 
 	return nil
 }
 
-func StartClient(localAddress string, serverAddress string) error {
+func StartClient(localAddress string, serverAddress string, userName string) error {
 	address = localAddress
+	clientName = userName
 
 	// Expose controller on server
 	clientMessageController := new(ClientMessageController)
@@ -112,7 +114,7 @@ func sendMessageWithRetry(msg *shared.Message) error {
 func buildMessage(inputText string) *shared.Message {
 	message := &shared.Message{
 		Data:         inputText,
-		User:         "Me",
+		User:         clientName,
 		IpAddress:    address,
 		Ack:          0,
 		MessagesSent: messagesSent,
