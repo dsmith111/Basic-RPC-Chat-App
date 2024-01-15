@@ -124,7 +124,8 @@ func buildMessage(inputText string) *shared.Message {
 }
 
 func displayMessage(receivedMessage *shared.Message) {
-	fmt.Printf("%s> %s\n", receivedMessage.User, receivedMessage.Data)
+	fmt.Printf("\n%s> %s\n", receivedMessage.User, receivedMessage.Data)
+	fmt.Print("User> ")
 }
 
 func dialServer(serverAddress string) error {

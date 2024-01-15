@@ -21,10 +21,11 @@ const (
 
 var (
 	serverAddress = "0.0.0.0:5083"
-	localAddress  = "0.0.0.0:5083"
+	localAddress  = "0.0.0.0"
 	ActiveUsers   map[string]bool
 	nodeType      string
 	userName      string
+	port          string
 )
 
 func main() {
@@ -32,7 +33,6 @@ func main() {
 	var err error
 	initFlags()
 	flag.Parse()
-	getOutboundIP()
 	file, err := os.ReadFile("./config.json")
 	if err != nil {
 		log.Fatalf("Failed reading the config file: %v\n", err)
@@ -43,6 +43,12 @@ func main() {
 		log.Fatalf("Failed to unmarshal: %s\n", err)
 	}
 	serverAddress = config["serverIP"]
+	if configClientIP, ok := config["clientIP"]; !ok {
+		getOutboundIP()
+		localAddress = localAddress + ":" + port
+	} else {
+		localAddress = configClientIP + ":" + port
+	}
 
 	// Prep client or server listen handlers
 	fmt.Printf("NodeType: %s\n", nodeType)
@@ -73,6 +79,7 @@ func main() {
 
 func initFlags() {
 	flag.StringVar(&nodeType, "type", "client", "Set the node to either be a client or server")
+	flag.StringVar(&port, "port", "5083", "The port for listening to server messages")
 	flag.StringVar(&userName, "name", "anonymous", "Set your username")
 }
 
@@ -84,5 +91,5 @@ func getOutboundIP() {
 	}
 	defer conn.Close()
 
-	localAddress = conn.LocalAddr().(*net.UDPAddr).String()
+	localAddress = string(conn.LocalAddr().(*net.UDPAddr).IP.String())
 }
